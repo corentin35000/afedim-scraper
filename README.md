@@ -1,4 +1,4 @@
-# Crypto Viz - Scraper
+# Agency - Scraper
 
 ## 🛠 Tech Stack
 
