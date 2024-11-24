@@ -1,0 +1,17 @@
+# Configurer le chemin des fichiers sources
+[build]
+cmd = "go build -o /app/tmp/main ./src"  # Indique le dossier src pour la compilation
+bin = "/app/tmp/main"                    # Emplacement du binaire
+poll = true
+
+# Configurer les fichiers à surveiller pour le rechargement
+[watch]
+include = ["**/*.go"]
+exclude_dir = ["vendor", "tmp"]
+delay = 0
+
+[log]
+time = true
+
+[screen]
+clear_on_rebuild = true
