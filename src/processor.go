@@ -2,46 +2,26 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-)
-
-const (
-	TelegramBotToken = "7423967574:AAHUuvNAsvLsTQ6bHMxHuOWxws_LXVeQUHw" // Token du bot Telegram
-	TelegramChannel  = "@annonceimmobilierafidim"                       // Nom d'utilisateur public du canal
 )
 
 /**
- * RunScraper initialise les services NATS et Colly, et lance le scraping en continu.
+ * RunScraper lance le scraping des annonces immobilières à intervalles réguliers.
  * Cette fonction est appelée depuis le point d'entrée de l'application.
  * @param {int} intervalMinutes - Intervalle de temps en minutes entre chaque cycle de scraping
  * return {void}
  */
 func RunScraper(intervalMinutes int) {
-	// Map globale pour suivre les références des biens déjà traités
-	// Tableau d'annonces immobilières déjà traitées
-	processedReferences := make(map[string]bool)
+	// Map globale pour suivre les références des biens déjà traités par les différentes agences
+	processedReferencesAfedim := make(map[string]bool)
+	processedReferencesGiboire := make(map[string]bool)
 
 	for {
-		// Créer une nouvelle instance de CollyService
-		collyService := NewCollyService()
+		// Lancer le scraping pour l'agence Afedim
+		processAgencyScraping(processedReferencesAfedim, "https://www.afedim.fr/fr/location/annonces/Appartement-Maison-Parking-Garage/Rennes-France/1-5-pieces/surface-0-100-m2/budget-0-90000-euros/rayon-10-km/disponible-/options-/exclusPlafondRess-/Resultats", "AFEDIM", "Afedim")
 
-		// Récupérer les références des annonces
-		newReferences := collyService.ScrapeAnnouncement("https://www.afedim.fr/fr/location/annonces/Appartement-Maison-Parking-Garage/Rennes-France/1-5-pieces/surface-0-100-m2/budget-0-90000-euros/rayon-10-km/disponible-/options-/exclusPlafondRess-/Resultats")
-
-		// Vérifier les nouvelles annonces
-		for _, ref := range newReferences {
-			if _, exists := processedReferences[ref]; !exists {
-				// Nouvelle annonce détectée
-				fmt.Println("Nouvelle annonce détectée :", ref)
-				processedReferences[ref] = true
-
-				// Envoyer une notification Telegram (fonction fictive pour l'exemple)
-				sendTelegramMessageToPublicChannel(fmt.Sprintf("Nouvelle annonce référence : %s", ref))
-			}
-		}
+		// Lancer le scraping pour l'agence Giboire
+		processAgencyScraping(processedReferencesGiboire, "https://www.giboire.com/recherche-location/appartement/?searchBy=default&address%5B%5D=RENNES&address%5B%5D=CHANTEPIE&address%5B%5D=CESSON+SEVIGNE&priceMax=700&nbBedrooms%5B%5D=1&transactionType%5B%5D=Location&searchBy=default", "GIBOIRE", "Giboire")
 
 		// Attendre avant le prochain cycle
 		time.Sleep(time.Duration(intervalMinutes) * time.Minute)
@@ -49,25 +29,34 @@ func RunScraper(intervalMinutes int) {
 }
 
 /**
- * sendTelegramMessageToPublicChannel envoie un message à un canal Telegram public.
- * @param {string} message - Le message à envoyer.
+ * processAgenceScraping lance le scraping pour une agence immobilière spécifique.
+ * @param {map[string]bool} processedReferences - Map contenant les références des biens déjà traités.
+ * @param {string} url - L'URL de la page de l'agence à scraper.
+ * @param {string} titleMessageTelegram - Le titre du message Telegram.
+ * @param {Agency} nameAgency - Le nom de l'agence.
  * @return {void}
  */
-func sendTelegramMessageToPublicChannel(message string) {
-	// Initialiser le bot Telegram
-	bot, err := tgbotapi.NewBotAPI(TelegramBotToken)
-	if err != nil {
-		log.Fatalf("Erreur lors de la création du bot Telegram : %v", err)
-	}
+func processAgencyScraping(processedReferences map[string]bool, url string, titleMessageTelegram string, nameAgency Agency) {
+	// Créer une nouvelle instance de CollyService
+	collyService := NewCollyService()
 
-	// Créer un nouveau message pour le canal
-	msg := tgbotapi.NewMessageToChannel(TelegramChannel, message)
+	// Récupérer les annonces complètes depuis l'agence
+	newAnnouncements := collyService.ScrapeAnnouncement(nameAgency, url)
 
-	// Envoyer le message
-	_, err = bot.Send(msg)
-	if err != nil {
-		log.Printf("Erreur lors de l'envoi du message Telegram : %v", err)
-	} else {
-		log.Println("Message envoyé au canal Telegram :", message)
+	// Comparer les références des biens pour détecter les nouvelles annonces
+	for _, announcement := range newAnnouncements {
+		if _, exists := processedReferences[announcement.propertyReference]; !exists {
+			// Nouvelle annonce détectée
+			fmt.Println("Nouvelle annonce détectée référence :", announcement.propertyReference)
+			processedReferences[announcement.propertyReference] = true
+
+			// Envoie un message sur le canal Telegram
+			sendTelegramMessageToPublicChannel(fmt.Sprintf(
+				"%s\nNouvelle annonce immobilière !\nRéférence : %s\nURL : %s",
+				titleMessageTelegram,
+				announcement.propertyReference,
+				announcement.url,
+			))
+		}
 	}
 }
