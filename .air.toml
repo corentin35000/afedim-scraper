@@ -1,5 +1,6 @@
 # Configurer le chemin des fichiers sources
 [build]
+# For linux : cmd = "GOOS=linux GOARCH=amd64 go build -o /app/tmp/main -buildvcs=false ./src"
 cmd = "go build -o /app/tmp/main ./src"  # Indique le dossier src pour la compilation
 bin = "/app/tmp/main"                    # Emplacement du binaire
 poll = true
