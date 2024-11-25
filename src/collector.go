@@ -39,6 +39,8 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageFoncia(collyService.collector, &detailPageURLs)
 	case AgenceDuColombier:
 		setupMainPageAgenceDuColombier(collyService.collector, &detailPageURLs)
+	case LaFrancaiseImmobiliere:
+		setupMainPageLaFrancaiseImmobiliere(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -82,6 +84,8 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesFoncia(detailCollector, &announcements)
 	case AgenceDuColombier:
 		processDetailPagesAgenceDuColombier(detailCollector, &announcements)
+	case LaFrancaiseImmobiliere:
+		processDetailPagesLaFrancaiseImmobiliere(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}

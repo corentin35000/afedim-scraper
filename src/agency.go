@@ -17,10 +17,11 @@ type Agency string
  * Constantes pour les agences immobilières.
  */
 const (
-	Afedim            Agency = "Afedim"
-	Giboire           Agency = "Giboire"
-	Foncia            Agency = "Foncia"
-	AgenceDuColombier Agency = "Agence du Colombier"
+	Afedim                 Agency = "Afedim"
+	Giboire                Agency = "Giboire"
+	Foncia                 Agency = "Foncia"
+	AgenceDuColombier      Agency = "Agence du Colombier"
+	LaFrancaiseImmobiliere Agency = "La Française Immobilière"
 )
 
 /**
@@ -245,5 +246,55 @@ func processDetailPagesAgenceDuColombier(collector *colly.Collector, announcemen
 				}
 			}
 		})
+	})
+}
+
+/**
+ * setupMainPageLaFrancaiseImmobiliere configure le collecteur pour la page principale de l'agence La Française Immobilière.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageLaFrancaiseImmobiliere(collector *colly.Collector, detailPageURLs *[]string) {
+	collector.OnHTML("div#liste_annonces div.row > article", func(e *colly.HTMLElement) {
+		// Tente de récupérer l'attribut href du premier <a> dans chaque article
+		detailLink := e.ChildAttr("a[rel='bookmark']", "href")
+		if detailLink != "" {
+			*detailPageURLs = append(*detailPageURLs, detailLink)
+		} else {
+			log.Println("Lien de détail introuvable dans cet article.")
+		}
+	})
+}
+
+/**
+ * processDetailPagesLaFrancaiseImmobiliere extrait les références des annonces de la page de détail de l'agence La Française Immobilière.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesLaFrancaiseImmobiliere(collector *colly.Collector, announcements *[]Announcement) {
+	collector.OnHTML("p.ref.d-inline", func(detail *colly.HTMLElement) {
+		// Récupérer le texte brut dans la balise
+		fullValue := strings.TrimSpace(detail.Text) // Nettoyage de la chaîne
+
+		// Essayer de parser la référence
+		var reference string
+		if _, err := fmt.Sscanf(fullValue, "Réf : %s", &reference); err == nil {
+			if reference != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: reference,
+					url:               url,
+				})
+			} else {
+				log.Printf("Référence vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Erreur lors de l'extraction de la référence depuis : %s, erreur : %v", fullValue, err)
+		}
 	})
 }

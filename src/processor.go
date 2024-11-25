@@ -17,6 +17,7 @@ func RunScraper(intervalMinutes int) {
 	processedReferencesGiboire := make(map[string]bool)
 	processedReferencesFoncia := make(map[string]bool)
 	processedReferencesAgenceDuColombier := make(map[string]bool)
+	processedReferencesLaFrancaiseImmobiliere := make(map[string]bool)
 
 	for {
 		// Lancer le scraping pour l'agence Afedim
@@ -30,6 +31,9 @@ func RunScraper(intervalMinutes int) {
 
 		// Lancer le scraping pour l'agence Agence du Colombier
 		processAgencyScraping(processedReferencesAgenceDuColombier, "https://agenceducolombier.com/annonces/?filter_search_action%5B%5D=louer&filter_search_type%5B%5D=&nb-pieces=&min-chambres=&min-surface=&max-surface=&price_low=0&price_max=6000000&submit=LANCER+MA+RECHERCHE", "AGENCE DU COLOMBIER", "Agence du Colombier")
+
+		// Lancer le scraping pour l'agence La Française Immobilière
+		processAgencyScraping(processedReferencesLaFrancaiseImmobiliere, "https://www.la-francaise-immobiliere.fr/location/?post_types=location&categorie%5B%5D=27&zone%5B%5D=6212&zone%5B%5D=6204&zone%5B%5D=6214&nb_chambres_min=0&nb_chambres_max=&prix_min=0&prix_max=700&submitted=1&o=date-desc&action=load_search_results&wia_6_type=&searchOnMap=0&wia_1_reference=", "LA FRANCAISE IMMOBILIERE", "La Française Immobilière")
 
 		// Attendre avant le prochain cycle
 		time.Sleep(time.Duration(intervalMinutes) * time.Minute)
