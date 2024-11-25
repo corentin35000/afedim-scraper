@@ -9,8 +9,8 @@
 - Afedim
 - Giboire
 - Foncia
-- AgenceDuColombier
-- LaFrancaiseImmobiliere
+- Agence Du Colombier
+- La Francaise Immobiliere
 - Guenno
 - LaMotte
 
