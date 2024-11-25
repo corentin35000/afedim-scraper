@@ -5,6 +5,15 @@
 
 <br /><br /><br /><br />
 
+## Compatible agencies for scraping:
+- Afedim
+- Giboire
+- Foncia
+- AgenceDuColombier
+- LaFrancaiseImmobiliere
+- Guenno
+- LaMotte
+
 ## 🛠 Tech Stack
 
 - Go (Language)
