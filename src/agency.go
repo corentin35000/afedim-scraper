@@ -202,15 +202,11 @@ func setupMainPageAgenceDuColombier(collector *colly.Collector, detailPageURLs *
 
 		// Compter le nombre d'annonces et extraire les URLs
 		e.ForEach("div.listing_wrapper", func(i int, annonce *colly.HTMLElement) {
-			log.Printf("Annonce trouvée : %d", i+1)
 			detailURL := annonce.ChildAttr("a", "href")
 			if detailURL != "" {
 				*detailPageURLs = append(*detailPageURLs, detailURL)
-				log.Printf("URL de la page de détail : %s", detailURL)
 			}
 		})
-
-		log.Printf("Nombre total d'annonces : %d", len(*detailPageURLs))
 	})
 
 }
