@@ -1,5 +1,8 @@
 # Agency - Scraper
 
+## TODO
+- Voir pourquoi on'ai obligé de supprimer le dossier `tmp` parfois pour que ça prends en compte le nouveau code
+
 ## 🛠 Tech Stack
 
 - Go (Language)
