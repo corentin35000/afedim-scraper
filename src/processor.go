@@ -15,6 +15,8 @@ func RunScraper(intervalMinutes int) {
 	// Map globale pour suivre les références des biens déjà traités par les différentes agences
 	processedReferencesAfedim := make(map[string]bool)
 	processedReferencesGiboire := make(map[string]bool)
+	processedReferencesFoncia := make(map[string]bool)
+	processedReferencesAgenceDuColombier := make(map[string]bool)
 
 	for {
 		// Lancer le scraping pour l'agence Afedim
@@ -23,13 +25,19 @@ func RunScraper(intervalMinutes int) {
 		// Lancer le scraping pour l'agence Giboire
 		processAgencyScraping(processedReferencesGiboire, "https://www.giboire.com/recherche-location/appartement/?searchBy=default&address%5B%5D=RENNES&address%5B%5D=CHANTEPIE&address%5B%5D=CESSON+SEVIGNE&priceMax=700&nbBedrooms%5B%5D=1&transactionType%5B%5D=Location&searchBy=default", "GIBOIRE", "Giboire")
 
+		// Lancer le scraping pour l'agence Foncia
+		processAgencyScraping(processedReferencesFoncia, "https://fr.foncia.com/location/rennes-35--chantepie-35135--cesson-sevigne-35510/appartement?nbPiece=2--&prix=--700&advanced=", "FONCIA", "Foncia")
+
+		// Lancer le scraping pour l'agence Agence du Colombier
+		processAgencyScraping(processedReferencesAgenceDuColombier, "https://agenceducolombier.com/annonces/?filter_search_action%5B%5D=louer&filter_search_type%5B%5D=&nb-pieces=&min-chambres=&min-surface=&max-surface=&price_low=0&price_max=6000000&submit=LANCER+MA+RECHERCHE", "AGENCE DU COLOMBIER", "Agence du Colombier")
+
 		// Attendre avant le prochain cycle
 		time.Sleep(time.Duration(intervalMinutes) * time.Minute)
 	}
 }
 
 /**
- * processAgenceScraping lance le scraping pour une agence immobilière spécifique.
+ * processAgencyScraping lance le scraping pour une agence immobilière spécifique.
  * @param {map[string]bool} processedReferences - Map contenant les références des biens déjà traités.
  * @param {string} url - L'URL de la page de l'agence à scraper.
  * @param {string} titleMessageTelegram - Le titre du message Telegram.

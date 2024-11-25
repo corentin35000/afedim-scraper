@@ -8,7 +8,8 @@ import (
 
 const (
 	TelegramBotToken = "7423967574:AAHUuvNAsvLsTQ6bHMxHuOWxws_LXVeQUHw" // Token du bot Telegram (@AnnonceImmobilierScraperBot)
-	TelegramChannel  = "@annonceimmobiliers"                            // Nom d'utilisateur public du canal public (https://t.me/annonceimmobiliers)
+	TelegramChannel  = "@annonceimmobiliers"                            // Nom d'utilisateur public du canal public (https://t.me/annonceimmobiliers), pour les tests utilisé : https://t.me/annonceimmobiliersafidim
+
 )
 
 /**

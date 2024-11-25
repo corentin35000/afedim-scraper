@@ -35,6 +35,10 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageAfedim(collyService.collector, &detailPageURLs)
 	case Giboire:
 		setupMainPageGiboire(collyService.collector, &detailPageURLs)
+	case Foncia:
+		setupMainPageFoncia(collyService.collector, &detailPageURLs)
+	case AgenceDuColombier:
+		setupMainPageAgenceDuColombier(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -74,6 +78,10 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesAfedim(detailCollector, &announcements)
 	case Giboire:
 		processDetailPagesGiboire(detailCollector, &announcements)
+	case Foncia:
+		processDetailPagesFoncia(detailCollector, &announcements)
+	case AgenceDuColombier:
+		processDetailPagesAgenceDuColombier(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
