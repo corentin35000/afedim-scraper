@@ -13,8 +13,43 @@ import (
  */
 type CollyService struct {
 	collector *colly.Collector
-	errChan   chan error // Canal pour signaler les erreurs
+	errChan   chan error
 }
+
+// Liste des User-Agents pour éviter le blocage
+/*var userAgents = []string{
+	"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3328.95 Safari/537.36 QIHU 360SE",
+	"Mozilla/5.0 (Linux; Android 14; SM-M136B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/130.0.6723.106 Mobile Safari/537.36 WebView MetaMaskMobile",
+	"Mozilla/5.0 (Linux; U; Android 14; en-gb; RMX3612 Build/UKQ1.230924.001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.88 Mobile Safari/537.36 HeyTapBrowser/45.11.4.1",
+	"Mozilla/5.0 (Linux; Android 13; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.5563.116 Mobile Safari/537.36",
+	"Mozilla/5.0 (Linux; Android 12; RMX3690 Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6723.107 Mobile Safari/537.36",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 11.12; rv:131.0) Gecko/20010101 Firefox/131.0",
+	"Mozilla/5.0 (Windows NT 10.0; WOW64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.6556.192 Safari/537.36",
+	"Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:132.0esr) Gecko/20100101 Firefox/132.0esr/0YoBqLP7z7eKob-09",
+	"Mozilla/5.0 (Linux; Android 12; NCO-LX1; HMSCore 6.14.0.322) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.196 HuaweiBrowser/15.0.4.312 Mobile Safari/537.36",
+	"Mozilla/5.0 (Linux; Android 14; SM-S918U1 Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/130.0.6723.106 Mobile Safari/537.36",
+	"Mozilla/5.0 (iPad; CPU OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/128.0.6613.92 Mobile/15E148 Safari/604.1",
+	"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
+	"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.2.803 Yowser/2.5 Safari/537.36",
+	"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36",
+	"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36",
+	"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0",
+	"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 YaBrowser/22.11.5.711 Yowser/2.5 Safari/537.36",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 11.12; rv:131.0) Gecko/20010101 Firefox/131.0",
+	"Mozilla/5.0 (Linux; Android 14; SM-M136B Build/UP1A.231005.007; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/130.0.6723.106 Mobile Safari/537.36 WebView MetaMaskMobile",
+}
+
+// Générateur de nombres aléatoires
+var random = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+/**
+ * randomUserAgent retourne un User-Agent aléatoire pour éviter le blocage.
+ * @return {string} - User-Agent aléatoire.
+*/
+/*func randomUserAgent() string {
+	return userAgents[random.Intn(len(userAgents))]
+}*/
 
 /**
  * NewCollyService crée une nouvelle instance de CollyService avec une configuration de collecteur prédéfinie.

@@ -20,6 +20,11 @@ const (
 	Giboire Agency = "Giboire"
 )
 
+/**
+ * setupMainPageAfedim configure le collecteur pour la page principale de l'agence Afedim.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ */
 func setupMainPageAfedim(collector *colly.Collector, detailPageURLs *[]string) {
 	collector.OnHTML("#C\\:blocRecherche\\.blocRechercheDesk\\.P\\.C\\:U", func(e *colly.HTMLElement) {
 		e.ForEach("li.item", func(_ int, li *colly.HTMLElement) {
@@ -33,6 +38,11 @@ func setupMainPageAfedim(collector *colly.Collector, detailPageURLs *[]string) {
 	})
 }
 
+/**
+ * processDetailPagesAfedim extrait les références des annonces de la page de détail de l'agence Afedim.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ */
 func processDetailPagesAfedim(collector *colly.Collector, announcements *[]Announcement) {
 	collector.OnHTML("span[class*='note']", func(detail *colly.HTMLElement) {
 		fullValue := detail.Text
@@ -50,6 +60,11 @@ func processDetailPagesAfedim(collector *colly.Collector, announcements *[]Annou
 	})
 }
 
+/**
+ * setupMainPageGiboire configure le collecteur pour la page principale de l'agence Giboire.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ */
 func setupMainPageGiboire(collector *colly.Collector, detailPageURLs *[]string) {
 	collector.OnHTML(".result-grid_wrap", func(e *colly.HTMLElement) {
 		// Parcourir chaque div représentant une annonce
@@ -73,6 +88,11 @@ func setupMainPageGiboire(collector *colly.Collector, detailPageURLs *[]string) 
 	})
 }
 
+/**
+ * processDetailPagesGiboire extrait les références des annonces de la page de détail de l'agence Giboire.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ */
 func processDetailPagesGiboire(collector *colly.Collector, announcements *[]Announcement) {
 	collector.OnHTML("p.presentation-bien_exclu_desc_ref", func(detail *colly.HTMLElement) {
 		// Récupérer le texte brut dans la balise
