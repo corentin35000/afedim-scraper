@@ -22,6 +22,10 @@ const (
 	Foncia                 Agency = "Foncia"
 	AgenceDuColombier      Agency = "Agence du Colombier"
 	LaFrancaiseImmobiliere Agency = "La Française Immobilière"
+	Guenno                 Agency = "Guenno"
+	LaMotte                Agency = "La Motte"
+	Kermarrec              Agency = "Kermarrec"
+	Nestenn                Agency = "Nestenn"
 )
 
 /**
@@ -293,6 +297,248 @@ func processDetailPagesLaFrancaiseImmobiliere(collector *colly.Collector, announ
 			}
 		} else {
 			log.Printf("Erreur lors de l'extraction de la référence depuis : %s, erreur : %v", fullValue, err)
+		}
+	})
+}
+
+/**
+ * setupMainPageGuenno configure le collecteur pour la page principale de l'agence Guenno.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageGuenno(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div contenant les annonces
+	collector.OnHTML("div.section-content", func(e *colly.HTMLElement) {
+		// Parcourir chaque balise <article> dans la section
+		e.ForEach("article", func(_ int, article *colly.HTMLElement) {
+			// Récupérer la valeur du href de la balise <a>
+			href := article.ChildAttr("a", "href")
+
+			// Vérifier si le lien est valide
+			if href != "" {
+				*detailPageURLs = append(*detailPageURLs, href)
+			} else {
+				log.Println("Aucun lien trouvé dans cet article.")
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesGuenno extrait les références des annonces de la page de détail de l'agence Guenno.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesGuenno(collector *colly.Collector, announcements *[]Announcement) {
+	collector.OnHTML("div#realty_area.realty_details", func(detail *colly.HTMLElement) {
+		// Rechercher l'élément contenant la référence dans l'attribut itemprop et span.grey-ref
+		fullValue := detail.ChildText("span.grey-ref")
+		fullValue = strings.TrimSpace(fullValue)
+
+		// Vérification et extraction de la référence
+		if strings.HasPrefix(fullValue, "Ref :") {
+			// Extraire uniquement la partie après "Ref :"
+			reference := strings.TrimSpace(strings.TrimPrefix(fullValue, "Ref :"))
+			if reference != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: reference,
+					url:               url,
+				})
+			} else {
+				log.Printf("Référence vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Impossible de trouver la référence dans : %s", fullValue)
+		}
+	})
+}
+
+/**
+ * setupMainPageLaMotte configure le collecteur pour la page principale de l'agence La Motte.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageLaMotte(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div contenant les annonces
+	collector.OnHTML("div#result", func(e *colly.HTMLElement) {
+		// Parcourir chaque balise <div> avec la classe "bien__wrapper--annonce"
+		e.ForEach("div.bien__wrapper--annonce", func(_ int, annonce *colly.HTMLElement) {
+			// Récupérer la valeur du href de la balise <a>
+			href := annonce.ChildAttr("a", "href")
+
+			// Vérifier si le lien est valide
+			if href != "" {
+				// Ajouter le lien à la liste
+				*detailPageURLs = append(*detailPageURLs, href)
+			} else {
+				log.Println("Aucun lien trouvé dans cette annonce.")
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesLaMotte extrait les références des annonces de la page de détail de l'agence La Motte.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesLaMotte(collector *colly.Collector, announcements *[]Announcement) {
+	collector.OnHTML("div.heading__delivery", func(detail *colly.HTMLElement) {
+		// Récupérer le texte de la balise <p class="tva">
+		fullValue := detail.ChildText("p.tva")
+		fullValue = strings.TrimSpace(fullValue)
+
+		// Vérifier si la valeur commence par "Lot"
+		if strings.HasPrefix(fullValue, "Lot") {
+			// Extraire la partie après "Lot"
+			lot := strings.TrimSpace(strings.TrimPrefix(fullValue, "Lot"))
+			if lot != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: lot,
+					url:               url,
+				})
+				log.Printf("Annonce trouvée : Lot %s, URL : %s", lot, url)
+			} else {
+				log.Printf("Lot vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Impossible de trouver le lot dans : %s", fullValue)
+		}
+	})
+}
+
+/**
+ * setupMainPageKermarrec configure le collecteur pour la page principale de l'agence Kermarrec.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageKermarrec(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div principale contenant les annonces
+	collector.OnHTML("div#primary.content-area.listofposts.grid", func(e *colly.HTMLElement) {
+		// Parcourir chaque balise <article> dans la div principale
+		e.ForEach("article", func(_ int, article *colly.HTMLElement) {
+			// Accéder à la div.panel > div.entry-content
+			href := article.ChildAttr("div.panel div.entry-content a", "href")
+
+			// Vérifier si le lien est valide
+			if href != "" {
+				*detailPageURLs = append(*detailPageURLs, href)
+			} else {
+				log.Println("Aucun lien trouvé dans cet article.")
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesKermarrec extrait les références des annonces de la page de détail de l'agence Kermarrec.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesKermarrec(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler l'en-tête contenant la référence
+	collector.OnHTML("header.container.entry-header", func(detail *colly.HTMLElement) {
+		// Récupérer le texte contenant le ref dans la balise span.ref
+		fullValue := detail.ChildText("span.ref")
+		fullValue = strings.TrimSpace(fullValue)
+
+		// Vérification et extraction de la référence
+		if strings.HasPrefix(fullValue, "(ref :") {
+			// Extraire uniquement la partie après "(ref :" et enlever la parenthèse fermante
+			reference := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(fullValue, "(ref :"), ")"))
+			if reference != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: reference,
+					url:               url,
+				})
+			} else {
+				log.Printf("Référence vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Impossible de trouver la référence dans : %s", fullValue)
+		}
+	})
+}
+
+/**
+ * setupMainPageNestenn configure le collecteur pour la page principale de l'agence Nestenn.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageNestenn(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div contenant les annonces
+	collector.OnHTML("div#gridPropertyOnlyWidening", func(e *colly.HTMLElement) {
+		// Parcourir chaque div contenant une annonce
+		e.ForEach("div.relative.grid_map_container", func(_ int, property *colly.HTMLElement) {
+			// Récupérer la valeur du href de la balise <a>
+			href := property.ChildAttr("a", "href")
+
+			// Vérifier si le lien est valide
+			if href != "" {
+				*detailPageURLs = append(*detailPageURLs, href)
+			} else {
+				log.Println("Aucun lien trouvé dans cette annonce.")
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesNestenn extrait les références des annonces de la page de détail de l'agence Nestenn.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesNestenn(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler la div contenant la référence
+	collector.OnHTML("div.property_ref", func(detail *colly.HTMLElement) {
+		// Récupérer le texte brut dans la div
+		fullValue := strings.TrimSpace(detail.Text)
+
+		// Rechercher et extraire la référence après "Réf :"
+		if strings.Contains(fullValue, "Réf :") {
+			// Diviser la chaîne sur "Réf :" et récupérer la partie après
+			parts := strings.Split(fullValue, "Réf :")
+			if len(parts) > 1 {
+				reference := strings.TrimSpace(parts[1])
+
+				// Vérifier si la référence est non vide
+				if reference != "" {
+					// URL de la page actuelle
+					url := detail.Request.URL.String()
+
+					// Ajouter l'annonce à la liste
+					*announcements = append(*announcements, Announcement{
+						propertyReference: reference,
+						url:               url,
+					})
+				} else {
+					log.Printf("Référence vide après extraction depuis : %s", fullValue)
+				}
+			} else {
+				log.Printf("Impossible de diviser la chaîne pour trouver la référence : %s", fullValue)
+			}
+		} else {
+			log.Printf("Pas de 'Réf :' trouvé dans : %s", fullValue)
 		}
 	})
 }

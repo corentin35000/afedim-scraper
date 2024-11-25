@@ -1,8 +1,10 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -29,6 +31,11 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 	// Afficher un message de démarrage
 	fmt.Println("Démarrage du scraping des annonces immobilières de l'agence :", agency)
 
+	// Ignorer les erreurs de certificat TLS
+	collyService.collector.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
+
 	// Utiliser un switch pour configurer les callbacks spécifiques à l'agence
 	switch agency {
 	case Afedim:
@@ -41,6 +48,14 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageAgenceDuColombier(collyService.collector, &detailPageURLs)
 	case LaFrancaiseImmobiliere:
 		setupMainPageLaFrancaiseImmobiliere(collyService.collector, &detailPageURLs)
+	case Guenno:
+		setupMainPageGuenno(collyService.collector, &detailPageURLs)
+	case LaMotte:
+		setupMainPageLaMotte(collyService.collector, &detailPageURLs)
+	case Kermarrec:
+		setupMainPageKermarrec(collyService.collector, &detailPageURLs)
+	case Nestenn:
+		setupMainPageNestenn(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -74,6 +89,11 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 	// Créer un nouveau collector pour les pages de détails
 	detailCollector := colly.NewCollector()
 
+	// Ignorer les erreurs de certificat TLS
+	detailCollector.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
+
 	// Utiliser un switch pour appeler la fonction spécifique à l'agence
 	switch agency {
 	case Afedim:
@@ -86,6 +106,14 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesAgenceDuColombier(detailCollector, &announcements)
 	case LaFrancaiseImmobiliere:
 		processDetailPagesLaFrancaiseImmobiliere(detailCollector, &announcements)
+	case Guenno:
+		processDetailPagesGuenno(detailCollector, &announcements)
+	case LaMotte:
+		processDetailPagesLaMotte(detailCollector, &announcements)
+	case Kermarrec:
+		processDetailPagesKermarrec(detailCollector, &announcements)
+	case Nestenn:
+		processDetailPagesNestenn(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}

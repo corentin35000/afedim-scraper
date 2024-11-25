@@ -13,6 +13,7 @@
 - La Francaise Immobiliere
 - Guenno
 - LaMotte
+- Kermarrec
 
 <br /><br /><br /><br />
 
