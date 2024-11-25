@@ -190,6 +190,12 @@ func processDetailPagesFoncia(collector *colly.Collector, announcements *[]Annou
 	})
 }
 
+/**
+ * setupMainPageAgenceDuColombier configure le collecteur pour la page principale de l'agence Agence du Colombier.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
 func setupMainPageAgenceDuColombier(collector *colly.Collector, detailPageURLs *[]string) {
 	collector.OnHTML("div#listing_ajax_container", func(e *colly.HTMLElement) {
 		log.Println("Entrée dans le conteneur principal des annonces")
@@ -209,6 +215,12 @@ func setupMainPageAgenceDuColombier(collector *colly.Collector, detailPageURLs *
 
 }
 
+/**
+ * processDetailPagesAgenceDuColombier extrait les références des annonces de la page de détail de l'agence Agence du Colombier.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
 func processDetailPagesAgenceDuColombier(collector *colly.Collector, announcements *[]Announcement) {
 	// Cibler la div contenant les informations principales, notamment la référence
 	collector.OnHTML("div.wpestate_estate_property_design_intext_details", func(detail *colly.HTMLElement) {
