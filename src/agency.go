@@ -199,8 +199,6 @@ func processDetailPagesFoncia(collector *colly.Collector, announcements *[]Annou
  */
 func setupMainPageAgenceDuColombier(collector *colly.Collector, detailPageURLs *[]string) {
 	collector.OnHTML("div#listing_ajax_container", func(e *colly.HTMLElement) {
-		log.Println("Entrée dans le conteneur principal des annonces")
-
 		// Compter le nombre d'annonces et extraire les URLs
 		e.ForEach("div.listing_wrapper", func(i int, annonce *colly.HTMLElement) {
 			detailURL := annonce.ChildAttr("a", "href")
