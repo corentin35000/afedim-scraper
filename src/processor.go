@@ -13,7 +13,7 @@ import (
  */
 func RunScraper(intervalMinutes int) {
 	// Map globale pour suivre les références des biens déjà traités par les différentes agences
-	/*processedReferencesAfedim := make(map[string]bool)
+	processedReferencesAfedim := make(map[string]bool)
 	processedReferencesGiboire := make(map[string]bool)
 	processedReferencesFoncia := make(map[string]bool)
 	processedReferencesAgenceDuColombier := make(map[string]bool)
@@ -25,12 +25,12 @@ func RunScraper(intervalMinutes int) {
 	processedReferencesSquareHabitat := make(map[string]bool)
 	processedReferencesCAImmobilier := make(map[string]bool)
 	processedReferencesPigeaultImmobilier := make(map[string]bool)
-	processedReferencesLaForetImmobilier := make(map[string]bool)*/
+	processedReferencesLaForetImmobilier := make(map[string]bool)
 	processedReferencesCogir := make(map[string]bool)
 
 	for {
 		// Lancer le scraping pour l'agence Afedim
-		/*processAgencyScraping(processedReferencesAfedim, "https://www.afedim.fr/fr/location/annonces/Appartement-Maison-Parking-Garage/Rennes-France/1-5-pieces/surface-0-100-m2/budget-0-90000-euros/rayon-10-km/disponible-/options-/exclusPlafondRess-/Resultats", "AFEDIM", "Afedim")
+		processAgencyScraping(processedReferencesAfedim, "https://www.afedim.fr/fr/location/annonces/Appartement-Maison-Parking-Garage/Rennes-France/1-5-pieces/surface-0-100-m2/budget-0-90000-euros/rayon-10-km/disponible-/options-/exclusPlafondRess-/Resultats", "AFEDIM", "Afedim")
 
 		// Lancer le scraping pour l'agence Giboire
 		processAgencyScraping(processedReferencesGiboire, "https://www.giboire.com/recherche-location/appartement/?searchBy=default&address%5B%5D=RENNES&address%5B%5D=CHANTEPIE&address%5B%5D=CESSON+SEVIGNE&priceMax=700&nbBedrooms%5B%5D=1&transactionType%5B%5D=Location&searchBy=default", "GIBOIRE", "Giboire")
@@ -67,8 +67,6 @@ func RunScraper(intervalMinutes int) {
 
 		// Lancer le scraping pour l'agence La Foret Immobilier
 		processAgencyScraping(processedReferencesLaForetImmobilier, "https://www.laforet.com/louer/location-appartement?filter%5Btypes%5D=apartment&filter%5Bmax%5D=700&filter%5Bcities%5D=35238%2C35051%2C35055", "LA FORET IMMOBILIER", "La Foret Immobilier")
-
-		*/
 
 		// Lancer le scraping pour l'agence Cogir
 		processAgencyScraping(processedReferencesCogir, "https://www.cogir.fr/fr/listing-location.html?loc=location&type%5B%5D=appartement&insee%5B%5D=35051&insee%5B%5D=35055&insee%5B%5D=35238&surfacemin=&prixmax=700&numero=&coordonnees=&archivage_statut=&tri=prix-desc&page=1", "COGIR", "Cogir")
