@@ -564,7 +564,6 @@ func setupMainPageSquareHabitat(collector *colly.Collector, details *[]string) {
 			if description == "" {
 				log.Printf("Aucune description trouvée pour l'annonce %d", index+1)
 			} else {
-				log.Printf("Description trouvée pour l'annonce %d", index+1)
 				*details = append(*details, description)
 			}
 		})
