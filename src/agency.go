@@ -569,39 +569,3 @@ func setupMainPageSquareHabitat(collector *colly.Collector, details *[]string) {
 		})
 	})
 }
-
-/**
- * processDetailPagesSquareHabitat extrait les références des annonces de la page de détail de Square Habitat.
- * @param {colly.Collector} collector - Le collecteur à configurer.
- * @param {[]Announcement} announcements - La liste des annonces à remplir.
- * @return {void}
- */
-func processDetailPagesSquareHabitat(collector *colly.Collector, announcements *[]Announcement) {
-	// Cibler la div contenant la référence
-	collector.OnHTML("div.property-details", func(detail *colly.HTMLElement) {
-		// Récupérer le texte brut dans l'élément contenant la référence
-		fullValue := strings.TrimSpace(detail.ChildText("span.reference"))
-
-		// Rechercher et extraire la référence si elle existe
-		if strings.HasPrefix(fullValue, "Référence :") {
-			// Extraire la référence après "Référence :"
-			reference := strings.TrimSpace(strings.TrimPrefix(fullValue, "Référence :"))
-
-			// Vérifier si la référence est non vide
-			if reference != "" {
-				// URL de la page actuelle
-				url := detail.Request.URL.String()
-
-				// Ajouter l'annonce à la liste
-				*announcements = append(*announcements, Announcement{
-					propertyReference: reference,
-					url:               url,
-				})
-			} else {
-				log.Printf("Référence vide après extraction depuis : %s", fullValue)
-			}
-		} else {
-			log.Printf("Pas de 'Référence :' trouvé dans : %s", fullValue)
-		}
-	})
-}

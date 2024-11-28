@@ -125,8 +125,6 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesKermarrec(detailCollector, &announcements)
 	case Nestenn:
 		processDetailPagesNestenn(detailCollector, &announcements)
-	case SquareHabitat:
-		//processDetailPagesSquareHabitat(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
