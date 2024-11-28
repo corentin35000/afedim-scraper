@@ -26,6 +26,7 @@ const (
 	LaMotte                Agency = "La Motte"
 	Kermarrec              Agency = "Kermarrec"
 	Nestenn                Agency = "Nestenn"
+	SquareHabitat          Agency = "Square Habitat"
 )
 
 /**
@@ -367,19 +368,22 @@ func processDetailPagesGuenno(collector *colly.Collector, announcements *[]Annou
  */
 func setupMainPageLaMotte(collector *colly.Collector, detailPageURLs *[]string) {
 	// Cibler la div contenant les annonces
-	collector.OnHTML("div#result", func(e *colly.HTMLElement) {
-		// Parcourir chaque balise <div> avec la classe "bien__wrapper--annonce"
-		e.ForEach("div.bien__wrapper--annonce", func(_ int, annonce *colly.HTMLElement) {
-			// Récupérer la valeur du href de la balise <a>
-			href := annonce.ChildAttr("a", "href")
+	collector.OnHTML("div.col-12.pr-md-0.col__list", func(e *colly.HTMLElement) {
+		// Cibler la div avec id "result"
+		e.ForEach("div#result", func(_ int, resultDiv *colly.HTMLElement) {
+			// Parcourir chaque annonce
+			resultDiv.ForEach("div.bien__wrapper--annonce", func(i int, annonce *colly.HTMLElement) {
+				// Récupérer le lien dans <a>
+				href := annonce.ChildAttr("a", "href")
 
-			// Vérifier si le lien est valide
-			if href != "" {
-				// Ajouter le lien à la liste
-				*detailPageURLs = append(*detailPageURLs, href)
-			} else {
-				log.Println("Aucun lien trouvé dans cette annonce.")
-			}
+				// Vérifier si le lien est valide
+				if href != "" {
+					log.Printf("Annonce %d : Lien trouvé : %s", i+1, href)
+					*detailPageURLs = append(*detailPageURLs, href)
+				} else {
+					log.Printf("Annonce %d : Aucun lien trouvé", i+1)
+				}
+			})
 		})
 	})
 }
@@ -539,6 +543,66 @@ func processDetailPagesNestenn(collector *colly.Collector, announcements *[]Anno
 			}
 		} else {
 			log.Printf("Pas de 'Réf :' trouvé dans : %s", fullValue)
+		}
+	})
+}
+
+/**
+ * setupMainPageSquareHabitat configure le collecteur pour la page principale de Square Habitat.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
+func setupMainPageSquareHabitat(collector *colly.Collector, details *[]string) {
+	// Cibler la div principale contenant les annonces
+	collector.OnHTML("div.biens-container.afc-display-xs-flex.afc-width-xs-100", func(e *colly.HTMLElement) {
+		// Parcourir chaque carte (card-container)
+		e.ForEach("div.card-container", func(index int, property *colly.HTMLElement) {
+			description := property.ChildText("app-card-bien > msl-card > div:nth-of-type(2) > div:nth-of-type(4) > app-texte-on-off > div.container > div.text-container > p")
+
+			// Vérifier si une description est trouvée
+			if description == "" {
+				log.Printf("Aucune description trouvée pour l'annonce %d", index+1)
+			} else {
+				log.Printf("Description trouvée pour l'annonce %d", index+1)
+				*details = append(*details, description)
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesSquareHabitat extrait les références des annonces de la page de détail de Square Habitat.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesSquareHabitat(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler la div contenant la référence
+	collector.OnHTML("div.property-details", func(detail *colly.HTMLElement) {
+		// Récupérer le texte brut dans l'élément contenant la référence
+		fullValue := strings.TrimSpace(detail.ChildText("span.reference"))
+
+		// Rechercher et extraire la référence si elle existe
+		if strings.HasPrefix(fullValue, "Référence :") {
+			// Extraire la référence après "Référence :"
+			reference := strings.TrimSpace(strings.TrimPrefix(fullValue, "Référence :"))
+
+			// Vérifier si la référence est non vide
+			if reference != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: reference,
+					url:               url,
+				})
+			} else {
+				log.Printf("Référence vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Pas de 'Référence :' trouvé dans : %s", fullValue)
 		}
 	})
 }

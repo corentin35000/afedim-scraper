@@ -9,7 +9,7 @@ import (
 
 const (
 	TelegramBotToken = "7423967574:AAHUuvNAsvLsTQ6bHMxHuOWxws_LXVeQUHw" // Token du bot Telegram (@AnnoncesImmobiliersScraperBot)
-	TelegramChannel  = "@annonceimmobiliers"                            // Canal Telegram public (https://t.me/annonceimmobiliers)
+	TelegramChannel  = "@annonceimmobilierafidim"                       // Canal Telegram public (https://t.me/annonceimmobiliers)
 	MaxRetries       = 5                                                // Nombre maximal de tentatives
 )
 

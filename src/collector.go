@@ -56,6 +56,8 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageKermarrec(collyService.collector, &detailPageURLs)
 	case Nestenn:
 		setupMainPageNestenn(collyService.collector, &detailPageURLs)
+	case SquareHabitat:
+		setupMainPageSquareHabitat(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -72,6 +74,15 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 
 	// Attendre la fin des requêtes asynchrones
 	collyService.collector.Wait()
+
+	if agency == SquareHabitat {
+		// La référence devient la description pour Square Habitat
+		var announcements []Announcement
+		for _, ref := range detailPageURLs {
+			announcements = append(announcements, Announcement{propertyReference: ref, url: ""})
+		}
+		return announcements
+	}
 
 	// Récupérer les annonces complètes (références et URLs)
 	return collyService.processDetailPages(detailPageURLs, agency)
@@ -114,6 +125,8 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesKermarrec(detailCollector, &announcements)
 	case Nestenn:
 		processDetailPagesNestenn(detailCollector, &announcements)
+	case SquareHabitat:
+		//processDetailPagesSquareHabitat(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
