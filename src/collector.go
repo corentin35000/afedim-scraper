@@ -61,6 +61,12 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageSquareHabitat(collyService.collector, &detailPageURLs)
 	case CAImmobilier:
 		setupMainPageCAImmobilier(collyService.collector, &detailPageURLs)
+	case PigeaultImmobilier:
+		setupMainPagePigeaultImmobilier(collyService.collector, &detailPageURLs)
+	case LaForetImmobilier:
+		setupMainPageLaForetImmobilier(collyService.collector, &detailPageURLs)
+	case Cogir:
+		setupMainPageCogir(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -148,6 +154,12 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 		processDetailPagesKermarrec(detailCollector, &announcements)
 	case Nestenn:
 		processDetailPagesNestenn(detailCollector, &announcements)
+	case PigeaultImmobilier:
+		processDetailPagesPigeaultImmobilier(detailCollector, &announcements)
+	case LaForetImmobilier:
+		processDetailPagesLaForetImmobilier(detailCollector, &announcements)
+	case Cogir:
+		processDetailPagesCogir(detailCollector, &announcements)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}

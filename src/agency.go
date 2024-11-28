@@ -28,6 +28,9 @@ const (
 	Nestenn                Agency = "Nestenn"
 	SquareHabitat          Agency = "Square Habitat"
 	CAImmobilier           Agency = "CA Immobilier"
+	PigeaultImmobilier     Agency = "Pigeault Immobilier"
+	LaForetImmobilier      Agency = "La Foret Immobilier"
+	Cogir                  Agency = "Cogir"
 )
 
 /**
@@ -569,6 +572,12 @@ func setupMainPageSquareHabitat(collector *colly.Collector, details *[]string) {
 	})
 }
 
+/**
+ * setupMainPageCAImmobilier configure le collecteur pour la page principale de CA Immobilier.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]string} detailPageURLs - La liste des URLs des pages de détail.
+ * @return {void}
+ */
 func setupMainPageCAImmobilier(collector *colly.Collector, detailPageURLs *[]string) {
 	collector.OnHTML("div.results-container.mosaic", func(e *colly.HTMLElement) {
 		// Parcourir chaque annonce (chaque div enfant)
@@ -580,7 +589,6 @@ func setupMainPageCAImmobilier(collector *colly.Collector, detailPageURLs *[]str
 					// Récupérer le lien dans la balise <a> avec le texte "Découvrir"
 					href := article.ChildAttr("div.bottom-container div.bottom-bar a", "href")
 					if href != "" {
-						log.Printf("Annonce trouvée : %s", "https://www.ca-immobilier.fr/"+href)
 						*detailPageURLs = append(*detailPageURLs, "https://www.ca-immobilier.fr/"+href)
 					}
 				})
@@ -588,5 +596,150 @@ func setupMainPageCAImmobilier(collector *colly.Collector, detailPageURLs *[]str
 				log.Println("Div supplémentaire ignorée.")
 			}
 		})
+	})
+}
+
+/**
+ * processDetailPagesCAImmobilier extrait les références des annonces de la page de détail de CA Immobilier.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func setupMainPagePigeaultImmobilier(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div contenant toutes les annonces
+	collector.OnHTML("div#liste_annonces", func(e *colly.HTMLElement) {
+		log.Println("Div principale 'liste_annonces' trouvée")
+
+		// Parcourir chaque <article> dans la div "row"
+		e.ForEach("div.row article", func(_ int, article *colly.HTMLElement) {
+			// Accéder à la balise <a> avec le href pour l'URL de l'annonce
+			href := article.ChildAttr("a[rel='bookmark']", "href")
+			if href != "" {
+				log.Printf("URL trouvée : %s", href)
+				*detailPageURLs = append(*detailPageURLs, href)
+			} else {
+				log.Println("Aucun href trouvé pour cet article")
+			}
+		})
+	})
+}
+
+/**
+ * processDetailPagesPigeaultImmobilier extrait les références des annonces de la page de détail de Pigeault Immobilier.
+ * @param {colly.Collector} collector - Le collecteur à configurer.
+ * @param {[]Announcement} announcements - La liste des annonces à remplir.
+ * @return {void}
+ */
+func processDetailPagesPigeaultImmobilier(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler la div contenant les informations principales
+	collector.OnHTML("div#top_infos", func(detail *colly.HTMLElement) {
+		// Récupérer la référence dans la balise <p> avec la classe "ref"
+		fullValue := detail.ChildText("p.ref")
+		fullValue = strings.TrimSpace(fullValue)
+
+		// Vérification et extraction de la référence
+		if strings.HasPrefix(fullValue, "Réf :") {
+			// Extraire uniquement la partie après "Réf :"
+			reference := strings.TrimSpace(strings.TrimPrefix(fullValue, "Réf :"))
+			if reference != "" {
+				// URL de la page actuelle
+				url := detail.Request.URL.String()
+
+				// Ajouter l'annonce à la liste
+				*announcements = append(*announcements, Announcement{
+					propertyReference: reference,
+					url:               url,
+				})
+			} else {
+				log.Printf("Référence vide après extraction depuis : %s", fullValue)
+			}
+		} else {
+			log.Printf("Impossible de trouver la référence dans : %s", fullValue)
+		}
+	})
+}
+
+func setupMainPageLaForetImmobilier(collector *colly.Collector, detailPageURLs *[]string) {
+	// Cibler la div principale contenant les annonces
+	collector.OnHTML("div.properties__list", func(e *colly.HTMLElement) {
+		// Parcourir chaque div avec la classe "row"
+		e.ForEach("div.row", func(_ int, row *colly.HTMLElement) {
+			// Parcourir chaque div contenant les annonces
+			row.ForEach("div.col-md-6.col-lg-6.col-xl-4", func(_ int, annonce *colly.HTMLElement) {
+				// Récupérer la valeur du href dans la balise <a>
+				href := annonce.ChildAttr("a.apartment-card__link", "href")
+				if href != "" {
+					// Ajouter l'URL complète à la liste
+					fullURL := e.Request.AbsoluteURL(href)
+					*detailPageURLs = append(*detailPageURLs, fullURL)
+				}
+			})
+		})
+	})
+}
+
+func processDetailPagesLaForetImmobilier(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler la section contenant les informations de l'annonce
+	collector.OnHTML("section.property__block.property-content", func(detail *colly.HTMLElement) {
+		log.Println("Section 'property__block' trouvée")
+
+		// Récupérer la référence web
+		webRef := detail.ChildText("h5.text-base.text-ref:contains('Référence web')")
+		webRef = strings.TrimSpace(strings.TrimPrefix(webRef, "Référence web :"))
+
+		// Récupérer la référence agence
+		agencyRef := detail.ChildText("h5.text-base.text-ref:contains('Référence Agence')")
+		agencyRef = strings.TrimSpace(strings.TrimPrefix(agencyRef, "Référence Agence :"))
+
+		// Vérifier si des références valides sont trouvées
+		if webRef != "" || agencyRef != "" {
+			// URL actuelle de la page
+			url := detail.Request.URL.String()
+
+			// Ajouter l'annonce avec les références à la liste
+			*announcements = append(*announcements, Announcement{
+				propertyReference: fmt.Sprintf("Web: %s, Agence: %s", webRef, agencyRef),
+				url:               url,
+			})
+			log.Printf("Références trouvées - Web: %s, Agence: %s, URL: %s", webRef, agencyRef, url)
+		} else {
+			log.Println("Aucune référence trouvée dans cette annonce")
+		}
+	})
+}
+
+func setupMainPageCogir(collector *colly.Collector, announcementURLs *[]string) {
+	// Cibler la div principale contenant les articles
+	collector.OnHTML("div.listing_article.clearfix", func(element *colly.HTMLElement) {
+		// Parcourir chaque balise <article> dans la div
+		element.ForEach("article", func(_ int, article *colly.HTMLElement) {
+			// Extraire la valeur de l'attribut href du lien dans la balise <article>
+			href := article.ChildAttr("a.item-link", "href")
+			if href != "" {
+				// Ajouter l'URL complète à la liste
+				*announcementURLs = append(*announcementURLs, href)
+			}
+		})
+	})
+}
+
+func processDetailPagesCogir(collector *colly.Collector, announcements *[]Announcement) {
+	// Cibler la section contenant les informations de l'annonce
+	collector.OnHTML("div.detail_header", func(detail *colly.HTMLElement) {
+		// Récupérer la référence de l'annonce
+		ref := detail.ChildText("div.crit span:contains('Réf.')")
+		ref = strings.TrimSpace(strings.TrimPrefix(ref, "Réf."))
+
+		// Vérifier si une référence valide est trouvée
+		if ref != "" {
+			// URL actuelle de la page
+			url := detail.Request.URL.String()
+
+			// Ajouter l'annonce avec la référence à la liste
+			*announcements = append(*announcements, Announcement{
+				propertyReference: ref,
+				url:               url,
+			})
+		}
 	})
 }
