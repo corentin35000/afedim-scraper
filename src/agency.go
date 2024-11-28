@@ -608,14 +608,11 @@ func setupMainPageCAImmobilier(collector *colly.Collector, detailPageURLs *[]str
 func setupMainPagePigeaultImmobilier(collector *colly.Collector, detailPageURLs *[]string) {
 	// Cibler la div contenant toutes les annonces
 	collector.OnHTML("div#liste_annonces", func(e *colly.HTMLElement) {
-		log.Println("Div principale 'liste_annonces' trouvée")
-
 		// Parcourir chaque <article> dans la div "row"
 		e.ForEach("div.row article", func(_ int, article *colly.HTMLElement) {
 			// Accéder à la balise <a> avec le href pour l'URL de l'annonce
 			href := article.ChildAttr("a[rel='bookmark']", "href")
 			if href != "" {
-				log.Printf("URL trouvée : %s", href)
 				*detailPageURLs = append(*detailPageURLs, href)
 			} else {
 				log.Println("Aucun href trouvé pour cet article")
@@ -681,8 +678,6 @@ func setupMainPageLaForetImmobilier(collector *colly.Collector, detailPageURLs *
 func processDetailPagesLaForetImmobilier(collector *colly.Collector, announcements *[]Announcement) {
 	// Cibler la section contenant les informations de l'annonce
 	collector.OnHTML("section.property__block.property-content", func(detail *colly.HTMLElement) {
-		log.Println("Section 'property__block' trouvée")
-
 		// Récupérer la référence web
 		webRef := detail.ChildText("h5.text-base.text-ref:contains('Référence web')")
 		webRef = strings.TrimSpace(strings.TrimPrefix(webRef, "Référence web :"))
@@ -701,7 +696,6 @@ func processDetailPagesLaForetImmobilier(collector *colly.Collector, announcemen
 				propertyReference: fmt.Sprintf("Web: %s, Agence: %s", webRef, agencyRef),
 				url:               url,
 			})
-			log.Printf("Références trouvées - Web: %s, Agence: %s, URL: %s", webRef, agencyRef, url)
 		} else {
 			log.Println("Aucune référence trouvée dans cette annonce")
 		}
