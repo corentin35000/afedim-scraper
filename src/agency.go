@@ -27,6 +27,7 @@ const (
 	Kermarrec              Agency = "Kermarrec"
 	Nestenn                Agency = "Nestenn"
 	SquareHabitat          Agency = "Square Habitat"
+	CAImmobilier           Agency = "CA Immobilier"
 )
 
 /**
@@ -563,6 +564,28 @@ func setupMainPageSquareHabitat(collector *colly.Collector, details *[]string) {
 				log.Printf("Aucune description trouvée pour l'annonce %d", index+1)
 			} else {
 				*details = append(*details, description)
+			}
+		})
+	})
+}
+
+func setupMainPageCAImmobilier(collector *colly.Collector, detailPageURLs *[]string) {
+	collector.OnHTML("div.results-container.mosaic", func(e *colly.HTMLElement) {
+		// Parcourir chaque annonce (chaque div enfant)
+		e.ForEach("div.columns.large-3", func(i int, annonceDiv *colly.HTMLElement) {
+			// Vérifier qu'il ne s'agit pas de la dernière div (liens supplémentaires)
+			if !annonceDiv.DOM.HasClass("sub_card-entities--blocliens") {
+				// Récupérer la balise <article>
+				annonceDiv.ForEach("article.sub_card-entities", func(_ int, article *colly.HTMLElement) {
+					// Récupérer le lien dans la balise <a> avec le texte "Découvrir"
+					href := article.ChildAttr("div.bottom-container div.bottom-bar a", "href")
+					if href != "" {
+						log.Printf("Annonce trouvée : %s", "https://www.ca-immobilier.fr/"+href)
+						*detailPageURLs = append(*detailPageURLs, "https://www.ca-immobilier.fr/"+href)
+					}
+				})
+			} else {
+				log.Println("Div supplémentaire ignorée.")
 			}
 		})
 	})

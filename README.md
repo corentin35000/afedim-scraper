@@ -15,6 +15,8 @@
 - LaMotte
 - Kermarrec
 - Nestenn
+- SquareHabitat
+- CAImmobilier
 
 <br /><br /><br /><br />
 

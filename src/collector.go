@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -58,6 +59,8 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		setupMainPageNestenn(collyService.collector, &detailPageURLs)
 	case SquareHabitat:
 		setupMainPageSquareHabitat(collyService.collector, &detailPageURLs)
+	case CAImmobilier:
+		setupMainPageCAImmobilier(collyService.collector, &detailPageURLs)
 	default:
 		log.Fatalf("Agence inconnue : %s", agency)
 	}
@@ -80,6 +83,26 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 		var announcements []Announcement
 		for _, ref := range detailPageURLs {
 			announcements = append(announcements, Announcement{propertyReference: ref, url: ""})
+		}
+		return announcements
+	} else if agency == CAImmobilier {
+		// La référence devient la description pour CA Immobilier
+		var announcements []Announcement
+		for _, ref := range detailPageURLs {
+			// Extraire la partie après le dernier "/" pour le propertyReference
+			lastSlashIndex := strings.LastIndex(ref, "/")
+			var propertyReference string
+			if lastSlashIndex != -1 && lastSlashIndex+1 < len(ref) {
+				propertyReference = ref[lastSlashIndex+1:]
+			} else {
+				propertyReference = "unknown" // Valeur par défaut si la référence est mal formée
+			}
+
+			// Ajouter à la liste des annonces
+			announcements = append(announcements, Announcement{
+				propertyReference: propertyReference,
+				url:               ref,
+			})
 		}
 		return announcements
 	}

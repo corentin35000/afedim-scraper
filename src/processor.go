@@ -23,6 +23,7 @@ func RunScraper(intervalMinutes int) {
 	processedReferencesKermarrec := make(map[string]bool)
 	processedReferencesNestenn := make(map[string]bool)
 	processedReferencesSquareHabitat := make(map[string]bool)
+	processedReferencesCAImmobilier := make(map[string]bool)
 
 	for {
 		// Lancer le scraping pour l'agence Afedim
@@ -54,6 +55,9 @@ func RunScraper(intervalMinutes int) {
 
 		// Lancer le scraping pour l'agence Square Habitat
 		processAgencyScraping(processedReferencesSquareHabitat, "https://www.squarehabitat.fr/annonces/location/bien/appartement/immobilier/bretagne/ille-et-vilaine/rennes-35000", "SQUARE HABITAT", "Square Habitat")
+
+		// Lancez le scraping pour l'agence CA Immobilier
+		processAgencyScraping(processedReferencesCAImmobilier, "https://www.ca-immobilier.fr/louer/location/appartement/35/Ille-et-vilaine", "CA IMMOBILIER", "CA Immobilier")
 
 		// Attendre avant le prochain cycle
 		time.Sleep(time.Duration(intervalMinutes) * time.Minute)
