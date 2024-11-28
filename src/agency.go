@@ -378,7 +378,6 @@ func setupMainPageLaMotte(collector *colly.Collector, detailPageURLs *[]string) 
 
 				// Vérifier si le lien est valide
 				if href != "" {
-					log.Printf("Annonce %d : Lien trouvé : %s", i+1, href)
 					*detailPageURLs = append(*detailPageURLs, href)
 				} else {
 					log.Printf("Annonce %d : Aucun lien trouvé", i+1)
@@ -413,7 +412,6 @@ func processDetailPagesLaMotte(collector *colly.Collector, announcements *[]Anno
 					propertyReference: lot,
 					url:               url,
 				})
-				log.Printf("Annonce trouvée : Lot %s, URL : %s", lot, url)
 			} else {
 				log.Printf("Lot vide après extraction depuis : %s", fullValue)
 			}
