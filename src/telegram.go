@@ -32,7 +32,7 @@ func sendTelegramMessageToPublicChannel(message string) {
 		if err != nil {
 			// Vérifier si l'erreur est liée aux limites de débit
 			if apiErr, ok := err.(*tgbotapi.Error); ok && apiErr.RetryAfter > 0 {
-				log.Printf("Trop de requêtes. Réessayer après %d secondes. Scraper mis en pause en attendant", apiErr.RetryAfter)
+				log.Printf("Trop de requêtes pour l'API Telegram. Réessayer après %d secondes. Scraper mis en pause en attendant", apiErr.RetryAfter)
 				time.Sleep(time.Duration(apiErr.RetryAfter) * time.Second)
 			} else {
 				log.Printf("Erreur lors de l'envoi du message Telegram : %v", err)
