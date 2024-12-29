@@ -62,7 +62,6 @@ func NewCollyService() *CollyService {
 		colly.IgnoreRobotsTxt(), // Ignorer les règles du fichier robots.txt
 		colly.MaxDepth(1),       // Limiter la profondeur de recherche à 1 pour éviter les liens externes
 		colly.Async(true),       // Activer le mode asynchrone pour le scraping
-		colly.CacheDir("./tmp"), // Définir le répertoire de cache pour éviter de re-scraper les pages
 		colly.DetectCharset(),   // Détecter automatiquement l'encodage de la page
 	)
 

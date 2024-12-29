@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -35,6 +36,11 @@ func (collyService *CollyService) ScrapeAnnouncement(agency Agency, url string) 
 	// Ignorer les erreurs de certificat TLS
 	collyService.collector.WithTransport(&http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
+
+	// Ajouter un paramètre unique à chaque requête pour invalider le cache
+	collyService.collector.OnRequest(func(r *colly.Request) {
+		r.URL.RawQuery += "&_=" + fmt.Sprintf("%d", time.Now().UnixNano())
 	})
 
 	// Utiliser un switch pour configurer les callbacks spécifiques à l'agence
@@ -132,6 +138,11 @@ func (collyService *CollyService) processDetailPages(detailPageURLs []string, ag
 	// Ignorer les erreurs de certificat TLS
 	detailCollector.WithTransport(&http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
+
+	// Ajouter un paramètre unique à chaque requête pour invalider le cache
+	detailCollector.OnRequest(func(r *colly.Request) {
+		r.URL.RawQuery += "&_=" + fmt.Sprintf("%d", time.Now().UnixNano())
 	})
 
 	// Utiliser un switch pour appeler la fonction spécifique à l'agence
