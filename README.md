@@ -15,10 +15,10 @@
 - LaMotte
 - Kermarrec
 - Nestenn
-- SquareHabitat
-- CAImmobilier
-- PigeaultImmobilier
-- LaFôretImmobilier
+- Square Habitat
+- CA Immobilier
+- Pigeault Immobilier
+- La Fôret Immobilier
 - Cogir
 
 <br /><br /><br /><br />
