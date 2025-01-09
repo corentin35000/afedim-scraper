@@ -23,8 +23,7 @@
 - Go (Language)
 - Colly (Library)
 - CI / CD (Github Actions)
-- DockerCompose (Development-Local)
-- Kubernetes (Development-Remote, Staging and Production)
+- DockerCompose (Development-Local and Production)
 
 <br /><br /><br /><br />
 
