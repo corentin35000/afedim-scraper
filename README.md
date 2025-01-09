@@ -83,14 +83,6 @@ Pour plus de détails sur les conventions de commit, consultez : [Conventional C
 
 <br /><br /><br /><br />
 
-## 📚 Domains of different environments
-
-- Production : https://test.crzcommon.com
-- Staging : https://staging.test.crzcommon.com
-- Development-Remote : https://dev.test.crzcommon.com
-
-<br /><br /><br /><br />
-
 ## ⚙️ Setup Environment Development
 
 1. Clone the project repository using the following commands :
